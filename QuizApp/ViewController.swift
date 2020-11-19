@@ -24,9 +24,42 @@ class ViewController: UIViewController {
     @IBAction func buttonPress(_ sender: Any) {
         let oldPositionY = editButton.center.y;
         let oldPositionX = editButton.center.x;
+        
+        let rot = Double.pi / 180 * 18
+        
         if edit == false {
-//            var animations = [CABasicAnimation]()
-//
+            var animations = [CAKeyframeAnimation]()
+            let rotateAnimation = CAKeyframeAnimation(keyPath: "transform.rotation.z")
+            rotateAnimation.values = [-rot, 0, rot]
+            rotateAnimation.autoreverses = true
+            rotateAnimation.duration = 0.16
+            rotateAnimation.keyTimes = [0, 0.5, 1]
+            rotateAnimation.repeatCount = .infinity
+            
+            animations.append(rotateAnimation)
+            
+            let upDownAnimation = CAKeyframeAnimation(keyPath: "transform.translation.y")
+            upDownAnimation.values = [0, 5.0, 0.0, -5.0]
+            upDownAnimation.autoreverses = true
+            upDownAnimation.duration = 0.16
+            upDownAnimation.keyTimes = [0, 0.33, 0.66, 1.0]
+            upDownAnimation.repeatCount = .infinity
+            animations.append(upDownAnimation)
+            
+            let lefrRightAnimation = CAKeyframeAnimation(keyPath: "transform.translation.x")
+            lefrRightAnimation.values = [0, 5.0, 0.0, -5.0]
+            lefrRightAnimation.autoreverses = true
+            lefrRightAnimation.duration = 0.15
+            upDownAnimation.keyTimes = [0, 0.33, 0.66, 1.0]
+            lefrRightAnimation.repeatCount = .infinity
+            animations.append(lefrRightAnimation)
+
+            let group = CAAnimationGroup()
+            group.duration = 0.3
+            group.animations = animations
+            group.repeatCount = .infinity
+            editButton.layer.add(group, forKey: "animate")
+            
 //            let rotateAnimation = CABasicAnimation(keyPath: "transform.rotation.z")
 //            rotateAnimation.toValue = Double.pi / 180 * 18
 //            rotateAnimation.autoreverses = true
@@ -62,60 +95,58 @@ class ViewController: UIViewController {
 //            rightAnimation.autoreverses = true
 //            //animations.append(rightAnimation)
 //
-//            let group = CAAnimationGroup()
-//            group.duration = 0.3
-//            group.animations = animations
-//            group.repeatCount = .infinity
+
             
             //editButton.layer.add(group, forKey: "rotate")
             originCenter = editButton.center
             
-            UIView.animateKeyframes(withDuration: 0.3,
-                                    delay: 0,
-                                    options: [.allowUserInteraction, .repeat, .autoreverse],
-                                    animations: {
-                                        UIView.addKeyframe(
-                                            withRelativeStartTime: 0.0,
-                                            relativeDuration: 0.16) {
-                                            self.editButton.center = CGPoint(x: oldPositionX + 5, y: oldPositionY)
-                                        }
-                                        UIView.addKeyframe(
-                                            withRelativeStartTime: 0.16,
-                                            relativeDuration: 0.16) {
-                                            self.editButton.center = CGPoint(x: oldPositionX - 5, y: oldPositionY)
-                                        }
-                                        UIView.addKeyframe(
-                                            withRelativeStartTime: 0.32,
-                                            relativeDuration: 0.16) {
-                                            self.editButton.center = CGPoint(x: oldPositionX, y: oldPositionY + 5)
-                                        }
-                                        UIView.addKeyframe(
-                                            withRelativeStartTime: 0.48,
-                                            relativeDuration: 0.16) {
-                                            self.editButton.center = CGPoint(x: oldPositionX, y: oldPositionY - 5)
-                                        }
-                                    
-                                        UIView.addKeyframe(
-                                            withRelativeStartTime: 0.64,
-                                            relativeDuration: 0.16) {
-                                            self.editButton.transform = CGAffineTransform(rotationAngle:  CGFloat(Double.pi / 180 * 18))
-                                        }
-                                        
-                                        UIView.addKeyframe(
-                                            withRelativeStartTime: 0.8,
-                                            relativeDuration: 0.16) {
-                                            self.editButton.transform = CGAffineTransform(rotationAngle: CGFloat(-Double.pi / 180 * 18))
-                                        }
-                                    }, completion: nil)
+//            UIView.animateKeyframes(withDuration: 0.3,
+//                                    delay: 0,
+//                                    options: [.allowUserInteraction, .repeat, .autoreverse],
+//                                    animations: {
+//                                        UIView.addKeyframe(
+//                                            withRelativeStartTime: 0.0,
+//                                            relativeDuration: 0.16) {
+//                                            self.editButton.center = CGPoint(x: oldPositionX + 5, y: oldPositionY)
+//                                        }
+//                                        UIView.addKeyframe(
+//                                            withRelativeStartTime: 0.16,
+//                                            relativeDuration: 0.16) {
+//                                            self.editButton.center = CGPoint(x: oldPositionX - 5, y: oldPositionY)
+//                                        }
+//                                        UIView.addKeyframe(
+//                                            withRelativeStartTime: 0.32,
+//                                            relativeDuration: 0.16) {
+//                                            self.editButton.center = CGPoint(x: oldPositionX, y: oldPositionY + 5)
+//                                        }
+//                                        UIView.addKeyframe(
+//                                            withRelativeStartTime: 0.48,
+//                                            relativeDuration: 0.16) {
+//                                            self.editButton.center = CGPoint(x: oldPositionX, y: oldPositionY - 5)
+//                                        }
+//
+//                                        UIView.addKeyframe(
+//                                            withRelativeStartTime: 0.64,
+//                                            relativeDuration: 0.16) {
+//                                            self.editButton.transform = CGAffineTransform(rotationAngle:  CGFloat(Double.pi / 180 * 18))
+//                                        }
+//
+////                                        UIView.addKeyframe(
+////                                            withRelativeStartTime: 0.8,
+////                                            relativeDuration: 0.16) {
+////                                            self.editButton.transform = CGAffineTransform(rotationAngle: CGFloat(-Double.pi / 180 * 18))
+////                                        }
+//                                    }, completion: nil)
             
             edit = true
         } else {
             editButton.layer.removeAllAnimations()
-            UIView.animate(withDuration: 0.3) {
-                self.editButton.center = self.originCenter!
-                self.editButton.transform = .identity
-                //self.edit
-            }
+            editButton.transform = CGAffineTransform.identity
+//            UIView.animate(withDuration: 0.3) {
+//                self.editButton.center = self.originCenter!
+//                self.editButton.transform = .identity
+//                //self.edit
+//            }
             edit = false
         }
     }
