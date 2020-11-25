@@ -8,147 +8,179 @@
 
 import UIKit
 
-class ViewController: UIViewController {
+extension UIResponder {
+    func responderChain() -> String {
+        guard let next = next else {
+            return String(describing: self)
+        }
+        return String(describing: self) + " -> " + next.responderChain()
+    }
+}
+
+class ViewController: UIViewController, UIGestureRecognizerDelegate {
 
     @IBOutlet weak var editButton: UIButton!
     
-    private var edit = false
-    private var originCenter: CGPoint?
+    lazy var logoCell: CAEmitterCell = {
+        let cell = CAEmitterCell()
+        cell.contents = UIImage(named: "camera")?.cgImage
+        cell.scale = 0.2
+        cell.scaleRange = 0.3
+        cell.emissionRange = 2 * .pi
+        cell.lifetime = 0.6
+        cell.birthRate = 10
+        cell.velocity = 50
+        cell.velocityRange = 300
+        cell.yAcceleration = 30
+        cell.xAcceleration = 30
+        cell.spin = -0.5
+        cell.spinRange = 1.0
+        return cell
+    }()
     
+    private var logoLayer = CAEmitterLayer()
+    
+    private var edit = false
+    
+    private var group = CAAnimationGroup()
+    var animations = [CAKeyframeAnimation]()
+
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        print(editButton.responderChain())
+        
         editButton.layer.borderWidth = 2
         editButton.layer.borderWidth = 2
         editButton.layer.borderColor = UIColor.white.cgColor
+        
+        let longTap = UILongPressGestureRecognizer(target: self, action: #selector(showLogo(_:)))
+        let tap = UITapGestureRecognizer(target: self, action: #selector(tapShowLogo(_:)))
+        view.addGestureRecognizer(tap)
+        //tap.cancelsTouchesInView = false
+        //tap.delegate = self
+        //view.addGestureRecognizer(longTap)
+        
     }
-    @IBAction func buttonPress(_ sender: Any) {
-        let oldPositionY = editButton.center.y;
-        let oldPositionX = editButton.center.x;
+    
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        print("touchesBegan")
+    }
+    
+    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        print("touchesEnded")
+    }
+    
+    override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
+        print("touchesCancelled")
+    }
+    
+    @objc private func tapShowLogo(_ gestureRecognizer: UITapGestureRecognizer) {
+        switch gestureRecognizer.state {
+        case .began:
+            print("began")
+        case .ended:
+            //print("Ended")
+            logoShow(into: view, from: gestureRecognizer.location(in: view))
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                self.logoRemove()
+            }
+        default:
+            print("Default")
+        }
+    }
+    
+    @objc private func showLogo(_ gestureRecognizer: UILongPressGestureRecognizer) {
+        switch gestureRecognizer.state {
+        case .began:
+            print("began")
+            logoShow(into: view, from: gestureRecognizer.location(in: view))
+        case .changed:
+            print("changed")
+            logoLayer.emitterPosition = gestureRecognizer.location(in: view)
+        case .cancelled:
+            print("Cancel")
+        case .ended:
+            print("Ended")
+            logoRemove()
+        default:
+            print("Default")
+        }
+    }
+    
+    func logoShow(into view: UIView, from point: CGPoint) {
+        logoLayer.emitterPosition = point
+        logoLayer.emitterSize = view.bounds.size
+        logoLayer.emitterShape = .point
+        logoLayer.beginTime = CACurrentMediaTime()
+        logoLayer.timeOffset = CFTimeInterval(arc4random_uniform(6) + 5)
+        logoLayer.emitterCells = [logoCell]
+        view.layer.addSublayer(logoLayer)
+    }
+    
+    func logoRemove() {
+        logoLayer.removeAllAnimations()
+        logoLayer.removeFromSuperlayer()
+    }
+    
+   
+    @IBAction func buttonPress(_ sender: UIButton) {
+        
+        //print(sender.layer.presentation()?.value(forKey: "transform.rotation.z"))
         
         let rot = Double.pi / 180 * 18
+        let animateTime = CFTimeInterval(0.3)
+        let changePositon: CGFloat = 5
         
         if edit == false {
-            var animations = [CAKeyframeAnimation]()
+            animations.removeAll()
+            
             let rotateAnimation = CAKeyframeAnimation(keyPath: "transform.rotation.z")
-            rotateAnimation.values = [-rot, 0, rot]
-            rotateAnimation.autoreverses = true
-            rotateAnimation.duration = 0.16
-            rotateAnimation.keyTimes = [0, 0.5, 1]
-            rotateAnimation.repeatCount = .infinity
-            
+            rotateAnimation.values = [0, -rot, 0, rot, 0]
+            rotateAnimation.beginTime = animateTime / 5
+            rotateAnimation.keyTimes = [0, 0.25, 0.5, 0.75, 1]
+            rotateAnimation.isAdditive = true
             animations.append(rotateAnimation)
-            
-            let upDownAnimation = CAKeyframeAnimation(keyPath: "transform.translation.y")
-            upDownAnimation.values = [0, 5.0, 0.0, -5.0]
-            upDownAnimation.autoreverses = true
-            upDownAnimation.duration = 0.16
-            upDownAnimation.keyTimes = [0, 0.33, 0.66, 1.0]
-            upDownAnimation.repeatCount = .infinity
-            animations.append(upDownAnimation)
-            
-            let lefrRightAnimation = CAKeyframeAnimation(keyPath: "transform.translation.x")
-            lefrRightAnimation.values = [0, 5.0, 0.0, -5.0]
-            lefrRightAnimation.autoreverses = true
-            lefrRightAnimation.duration = 0.15
-            upDownAnimation.keyTimes = [0, 0.33, 0.66, 1.0]
-            lefrRightAnimation.repeatCount = .infinity
-            animations.append(lefrRightAnimation)
 
-            let group = CAAnimationGroup()
-            group.duration = 0.3
+            let upDownAnimation = CAKeyframeAnimation(keyPath: "position.y")
+            upDownAnimation.values = [0, -changePositon, 0, changePositon, 0]
+            upDownAnimation.keyTimes = [0, 0.25, 0.5, 0.75, 1]
+            upDownAnimation.isAdditive = true
+            animations.append(upDownAnimation)
+
+            let lefRightAnimation = CAKeyframeAnimation(keyPath: "position.x")
+            lefRightAnimation.values = [0, -changePositon, 0, changePositon, 0]
+            lefRightAnimation.keyTimes = [0, 0.25, 0.5, 0.75, 1]
+            lefRightAnimation.isAdditive = true
+            animations.append(lefRightAnimation)
+
+
+            group.duration = animateTime
             group.animations = animations
             group.repeatCount = .infinity
-            editButton.layer.add(group, forKey: "animate")
-            
-//            let rotateAnimation = CABasicAnimation(keyPath: "transform.rotation.z")
-//            rotateAnimation.toValue = Double.pi / 180 * 18
-//            rotateAnimation.autoreverses = true
-//            rotateAnimation.repeatCount = .infinity
-//
-//            animations.append(rotateAnimation)
-//
-//            let rotateAnimation2 = CABasicAnimation(keyPath: "transform.rotation.z")
-//            rotateAnimation2.toValue = -Double.pi / 180 * 18
-//            rotateAnimation2.autoreverses = true
-//            //rotateAnimation2.repeatCount = .infinity
-//
-//            animations.append(rotateAnimation2)
-//
-//            let downAnimation = CABasicAnimation(keyPath: "position.y")
-//            downAnimation.toValue = oldPositionY + 5
-//            downAnimation.autoreverses = true
-//
-//            //animations.append(downAnimation)
-//
-//            let upAnimation = CABasicAnimation(keyPath: "position.y")
-//            upAnimation.toValue = oldPositionY - 5
-//            upAnimation.autoreverses = true
-//            //animations.append(upAnimation)
-//
-//            let leftAnimation = CABasicAnimation(keyPath: "position.x")
-//            leftAnimation.toValue = oldPositionX - 5
-//            leftAnimation.autoreverses = true
-//            //animations.append(leftAnimation)
-//
-//            let rightAnimation = CABasicAnimation(keyPath: "position.y")
-//            rightAnimation.toValue = oldPositionX + 5
-//            rightAnimation.autoreverses = true
-//            //animations.append(rightAnimation)
-//
+            group.isRemovedOnCompletion = false
 
-            
-            //editButton.layer.add(group, forKey: "rotate")
-            originCenter = editButton.center
-            
-//            UIView.animateKeyframes(withDuration: 0.3,
-//                                    delay: 0,
-//                                    options: [.allowUserInteraction, .repeat, .autoreverse],
-//                                    animations: {
-//                                        UIView.addKeyframe(
-//                                            withRelativeStartTime: 0.0,
-//                                            relativeDuration: 0.16) {
-//                                            self.editButton.center = CGPoint(x: oldPositionX + 5, y: oldPositionY)
-//                                        }
-//                                        UIView.addKeyframe(
-//                                            withRelativeStartTime: 0.16,
-//                                            relativeDuration: 0.16) {
-//                                            self.editButton.center = CGPoint(x: oldPositionX - 5, y: oldPositionY)
-//                                        }
-//                                        UIView.addKeyframe(
-//                                            withRelativeStartTime: 0.32,
-//                                            relativeDuration: 0.16) {
-//                                            self.editButton.center = CGPoint(x: oldPositionX, y: oldPositionY + 5)
-//                                        }
-//                                        UIView.addKeyframe(
-//                                            withRelativeStartTime: 0.48,
-//                                            relativeDuration: 0.16) {
-//                                            self.editButton.center = CGPoint(x: oldPositionX, y: oldPositionY - 5)
-//                                        }
-//
-//                                        UIView.addKeyframe(
-//                                            withRelativeStartTime: 0.64,
-//                                            relativeDuration: 0.16) {
-//                                            self.editButton.transform = CGAffineTransform(rotationAngle:  CGFloat(Double.pi / 180 * 18))
-//                                        }
-//
-////                                        UIView.addKeyframe(
-////                                            withRelativeStartTime: 0.8,
-////                                            relativeDuration: 0.16) {
-////                                            self.editButton.transform = CGAffineTransform(rotationAngle: CGFloat(-Double.pi / 180 * 18))
-////                                        }
-//                                    }, completion: nil)
-            
-            edit = true
+            editButton.layer.add(group, forKey: "totalGroup")
         } else {
-            editButton.layer.removeAllAnimations()
-            editButton.transform = CGAffineTransform.identity
-//            UIView.animate(withDuration: 0.3) {
-//                self.editButton.center = self.originCenter!
-//                self.editButton.transform = .identity
-//                //self.edit
-//            }
-            edit = false
+            UIView.animate(withDuration: animateTime) {
+                self.editButton.layer.removeAnimation(forKey: "totalGroup")
+                self.editButton.transform = .identity
+                self.editButton.layoutIfNeeded()
+            }
         }
+        edit.toggle()
+    }
+    
+    deinit {
+        print("first deinit")
+    }
+    
+    let deleg = TransitioningDelegate()
+    @IBAction func profileDidPress(_ sender: UIButton) {
+        let secondVC = SecondViewController()
+        secondVC.transitioningDelegate = deleg
+        secondVC.modalPresentationStyle = .custom
+        present(secondVC, animated: true, completion: nil)
     }
 }
 
