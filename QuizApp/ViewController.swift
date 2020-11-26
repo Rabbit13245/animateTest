@@ -18,8 +18,6 @@ extension UIResponder {
 }
 
 class ViewController: UIViewController, UIGestureRecognizerDelegate {
-
-    @IBOutlet weak var editButton: UIButton!
     
     lazy var logoCell: CAEmitterCell = {
         let cell = CAEmitterCell()
@@ -45,14 +43,35 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate {
     private var group = CAAnimationGroup()
     var animations = [CAKeyframeAnimation]()
 
+    private let rot = Double.pi / 180 * 18
+    private let pos: CGFloat = 5
+    
+    private lazy var editButton: AnimateButton = {
+        let button = AnimateButton(animateTime: 0.3, rotationAngle: rot, changePosition: pos)
+        button.setTitle("Edit", for: .normal)
+        button.layer.borderWidth = 2
+        button.layer.borderColor = UIColor.white.cgColor
+        button.addTarget(self, action: #selector(buttonDidPres), for: .touchUpInside)
+        
+        button.translatesAutoresizingMaskIntoConstraints = false
+        return button
+    }()
+    
+    @objc private func buttonDidPres() {
+        if !edit {
+            editButton.startAnimate()
+        } else {
+            editButton.stopAnimate()
+        }
+        edit.toggle()
+    }
+    
+    override func loadView() {
+        self.view = CustomView()
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        print(editButton.responderChain())
-        
-        editButton.layer.borderWidth = 2
-        editButton.layer.borderWidth = 2
-        editButton.layer.borderColor = UIColor.white.cgColor
         
         let longTap = UILongPressGestureRecognizer(target: self, action: #selector(showLogo(_:)))
         let tap = UITapGestureRecognizer(target: self, action: #selector(tapShowLogo(_:)))
@@ -61,26 +80,27 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate {
         //tap.delegate = self
         //view.addGestureRecognizer(longTap)
         
-    }
-    
-    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        print("touchesBegan")
-    }
-    
-    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-        print("touchesEnded")
-    }
-    
-    override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
-        print("touchesCancelled")
+        view.addSubview(editButton)
+        
+        let secondView = SecondView()
+        secondView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(secondView)
+        
+        NSLayoutConstraint.activate([
+                                        editButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+                                        editButton.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+        
+            secondView.widthAnchor.constraint(equalToConstant: 50),
+            secondView.heightAnchor.constraint(equalToConstant: 50),
+            secondView.topAnchor.constraint(equalTo: view.topAnchor, constant: 50)
+        ])
+        
     }
     
     @objc private func tapShowLogo(_ gestureRecognizer: UITapGestureRecognizer) {
         switch gestureRecognizer.state {
-        case .began:
-            print("began")
         case .ended:
-            //print("Ended")
+            print("GestureMethod")
             logoShow(into: view, from: gestureRecognizer.location(in: view))
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                 self.logoRemove()
@@ -123,59 +143,12 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate {
         logoLayer.removeFromSuperlayer()
     }
     
-   
-    @IBAction func buttonPress(_ sender: UIButton) {
-        
-        //print(sender.layer.presentation()?.value(forKey: "transform.rotation.z"))
-        
-        let rot = Double.pi / 180 * 18
-        let animateTime = CFTimeInterval(0.3)
-        let changePositon: CGFloat = 5
-        
-        if edit == false {
-            animations.removeAll()
-            
-            let rotateAnimation = CAKeyframeAnimation(keyPath: "transform.rotation.z")
-            rotateAnimation.values = [0, -rot, 0, rot, 0]
-            rotateAnimation.beginTime = animateTime / 5
-            rotateAnimation.keyTimes = [0, 0.25, 0.5, 0.75, 1]
-            rotateAnimation.isAdditive = true
-            animations.append(rotateAnimation)
-
-            let upDownAnimation = CAKeyframeAnimation(keyPath: "position.y")
-            upDownAnimation.values = [0, -changePositon, 0, changePositon, 0]
-            upDownAnimation.keyTimes = [0, 0.25, 0.5, 0.75, 1]
-            upDownAnimation.isAdditive = true
-            animations.append(upDownAnimation)
-
-            let lefRightAnimation = CAKeyframeAnimation(keyPath: "position.x")
-            lefRightAnimation.values = [0, -changePositon, 0, changePositon, 0]
-            lefRightAnimation.keyTimes = [0, 0.25, 0.5, 0.75, 1]
-            lefRightAnimation.isAdditive = true
-            animations.append(lefRightAnimation)
-
-
-            group.duration = animateTime
-            group.animations = animations
-            group.repeatCount = .infinity
-            group.isRemovedOnCompletion = false
-
-            editButton.layer.add(group, forKey: "totalGroup")
-        } else {
-            UIView.animate(withDuration: animateTime) {
-                self.editButton.layer.removeAnimation(forKey: "totalGroup")
-                self.editButton.transform = .identity
-                self.editButton.layoutIfNeeded()
-            }
-        }
-        edit.toggle()
-    }
-    
     deinit {
         print("first deinit")
     }
     
     let deleg = TransitioningDelegate()
+    
     @IBAction func profileDidPress(_ sender: UIButton) {
         let secondVC = SecondViewController()
         secondVC.transitioningDelegate = deleg

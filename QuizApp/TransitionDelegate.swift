@@ -16,4 +16,6 @@ class TransitioningDelegate: NSObject, UIViewControllerTransitioningDelegate {
     func animationController(forDismissed dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
         return AnimatorTransitioning(type: .dismiss)
     }
+    
+    
 }

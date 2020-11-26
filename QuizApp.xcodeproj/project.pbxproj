@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		84328FA3256EE82800A5A19B /* PresentationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84328FA2256EE82800A5A19B /* PresentationController.swift */; };
 		84C0179B256D600F0044177E /* SecondViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C0179A256D600F0044177E /* SecondViewController.swift */; };
 		84C0179F256D88380044177E /* TransitionDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C0179E256D88380044177E /* TransitionDelegate.swift */; };
 		84C017A2256D88990044177E /* AnimatorTransitioning.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C017A1256D88990044177E /* AnimatorTransitioning.swift */; };
@@ -16,9 +17,14 @@
 		84D4F25424E574C200718D9F /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 84D4F25224E574C200718D9F /* Main.storyboard */; };
 		84D4F25624E574C400718D9F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 84D4F25524E574C400718D9F /* Assets.xcassets */; };
 		84D4F25924E574C400718D9F /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 84D4F25724E574C400718D9F /* LaunchScreen.storyboard */; };
+		84D9E444256E7C34004B7FD4 /* AnimateButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84D9E443256E7C34004B7FD4 /* AnimateButton.swift */; };
+		84EBB3E2256FB24E00858E79 /* CustomVIew.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84EBB3E1256FB24E00858E79 /* CustomVIew.swift */; };
+		84EBB3E5256FB9BE00858E79 /* CustomButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84EBB3E4256FB9BE00858E79 /* CustomButton.swift */; };
+		84EBB3E8256FBD9300858E79 /* SecondVIew.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84EBB3E7256FBD9300858E79 /* SecondVIew.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		84328FA2256EE82800A5A19B /* PresentationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresentationController.swift; sourceTree = "<group>"; };
 		84C0179A256D600F0044177E /* SecondViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecondViewController.swift; sourceTree = "<group>"; };
 		84C0179E256D88380044177E /* TransitionDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransitionDelegate.swift; sourceTree = "<group>"; };
 		84C017A1256D88990044177E /* AnimatorTransitioning.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnimatorTransitioning.swift; sourceTree = "<group>"; };
@@ -30,6 +36,10 @@
 		84D4F25524E574C400718D9F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		84D4F25824E574C400718D9F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		84D4F25A24E574C400718D9F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		84D9E443256E7C34004B7FD4 /* AnimateButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnimateButton.swift; sourceTree = "<group>"; };
+		84EBB3E1256FB24E00858E79 /* CustomVIew.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomVIew.swift; sourceTree = "<group>"; };
+		84EBB3E4256FB9BE00858E79 /* CustomButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomButton.swift; sourceTree = "<group>"; };
+		84EBB3E7256FBD9300858E79 /* SecondVIew.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecondVIew.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -72,6 +82,11 @@
 				84C0179A256D600F0044177E /* SecondViewController.swift */,
 				84C0179E256D88380044177E /* TransitionDelegate.swift */,
 				84C017A1256D88990044177E /* AnimatorTransitioning.swift */,
+				84D9E443256E7C34004B7FD4 /* AnimateButton.swift */,
+				84328FA2256EE82800A5A19B /* PresentationController.swift */,
+				84EBB3E1256FB24E00858E79 /* CustomVIew.swift */,
+				84EBB3E4256FB9BE00858E79 /* CustomButton.swift */,
+				84EBB3E7256FBD9300858E79 /* SecondVIew.swift */,
 			);
 			path = QuizApp;
 			sourceTree = "<group>";
@@ -148,11 +163,16 @@
 			buildActionMask = 2147483647;
 			files = (
 				84C017A2256D88990044177E /* AnimatorTransitioning.swift in Sources */,
+				84D9E444256E7C34004B7FD4 /* AnimateButton.swift in Sources */,
+				84EBB3E2256FB24E00858E79 /* CustomVIew.swift in Sources */,
 				84C0179B256D600F0044177E /* SecondViewController.swift in Sources */,
+				84EBB3E5256FB9BE00858E79 /* CustomButton.swift in Sources */,
 				84C0179F256D88380044177E /* TransitionDelegate.swift in Sources */,
 				84D4F25124E574C200718D9F /* ViewController.swift in Sources */,
 				84D4F24D24E574C200718D9F /* AppDelegate.swift in Sources */,
 				84D4F24F24E574C200718D9F /* SceneDelegate.swift in Sources */,
+				84EBB3E8256FBD9300858E79 /* SecondVIew.swift in Sources */,
+				84328FA3256EE82800A5A19B /* PresentationController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
